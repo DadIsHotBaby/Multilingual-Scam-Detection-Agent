@@ -1,7 +1,54 @@
-*.pyc
+# Byte-compiled / optimized / DLL files
 __pycache__/
-.DS_Store
+*.py[cod]
+*$py.class
+
+# Virtual environment (if ever used)
+env/
+venv/
+.scam_env/
+.scam_env*/ 
+*.egg-info/
+.eggs/
+*.egg
+
+# Environment files
 .env
-.venv
-.idea/
+*.env
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VSCode settings
 .vscode/
+
+# PyCharm settings
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs and debug
+*.log
+
+# Python package manager
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Streamlit cache and artifacts
+.streamlit/
+*.tfrecord
+*.h5
+*.pb
+*.ckpt
+*.pt
+runs/
+
+# Tokenizer and model cache
+cache/
+*.json
+tokenizer_config.json
+special_tokens_map.json
+pytorch_model.bin
+config.json
