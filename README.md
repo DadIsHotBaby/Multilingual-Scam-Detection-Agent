@@ -15,9 +15,9 @@ Technologies Used :
 > Streamlit
 Author : Umang Bhartiya
 
-🕒 Project Timeline (Completed in 1 Day)
-Data Preprocessing – 2 hours
+🕒 Project Timeline (Completed in 2 Day)
+Data Preprocessing – 1.5 hours
 Tokenization – 1 hour
-Model Fine-Tuning – 3 hours
+Model Fine-Tuning – 40 hours
 Model Evaluation – 1 hour
 Streamlit Deployment – 2 hours
