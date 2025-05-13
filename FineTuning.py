@@ -20,12 +20,10 @@ OUTPUT_DIR = Path(BASE_DIR).parent / "final_model"
 class ScamDataset(Dataset):
     def __init__(self, data):
         """Handles all possible dataset formats"""
-        # Debug: Show what we received
         print(f"\nInitial dataset type: {type(data)}")
         if hasattr(data, '__dict__'):
             print("Dataset attributes:", vars(data).keys())
 
-        # Handle different input formats
         if isinstance(data, dict):
             self._init_from_dict(data)
         elif hasattr(data, 'input_ids'):
@@ -33,12 +31,10 @@ class ScamDataset(Dataset):
         else:
             raise ValueError("Unsupported dataset format")
 
-        # Final validation
         self._validate_dataset()
 
     def _init_from_dict(self, data):
         """Initialize from dictionary format"""
-        # Check for different possible key combinations
         if 'input_ids' in data:
             self.input_ids = data['input_ids']
             self.attention_mask = data.get('attention_mask', [1]*len(self.input_ids))
@@ -86,11 +82,9 @@ def load_dataset_safely(path):
         raise FileNotFoundError(f"File not found: {path}")
 
     try:
-        # Load with safety checks
         torch.serialization.add_safe_globals([ScamDataset])
         data = torch.load(path, weights_only=False)
 
-        # Debug: Show loaded data structure
         print(f"Loaded data type: {type(data)}")
         if isinstance(data, dict):
             print("Dictionary keys:", data.keys())
@@ -106,7 +100,6 @@ def load_dataset_safely(path):
 if __name__ == "__main__":
     print("=== Starting Scam Detection Fine-Tuning ===")
 
-    # Load datasets with enhanced debugging
     try:
         print("\n" + "="*40)
         print("Loading TRAIN dataset...")
@@ -116,7 +109,6 @@ if __name__ == "__main__":
         print("Loading TEST dataset...")
         test_dataset = load_dataset_safely(TEST_PATH)
 
-        # Show sample data
         print("\nTrain sample:", train_dataset[0])
         print("Test sample:", test_dataset[0])
     except Exception as e:
@@ -129,20 +121,23 @@ if __name__ == "__main__":
         num_labels=2
     )
 
-    # Training configuration
+    # Training configuration with checkpointing
     training_args = TrainingArguments(
-    output_dir="./results",
-    learning_rate=2e-5,
-    per_device_train_batch_size=8,
-    per_device_eval_batch_size=8,
-    num_train_epochs=3,
-    weight_decay=0.01,
-    logging_dir="./logs",
-    logging_steps=10
+        output_dir="./results",               # Directory to save checkpoints
+        learning_rate=2e-5,
+        per_device_train_batch_size=8,
+        per_device_eval_batch_size=8,
+        num_train_epochs=3,
+        weight_decay=0.01,
+        logging_dir="./logs",
+        logging_steps=10,
+        save_strategy="steps",                # Save model periodically
+        save_steps=500,                       # Save checkpoint every 500 steps
+        save_total_limit=3,                   # Keep only the 3 most recent checkpoints
+        resume_from_checkpoint=True           # Resume training if interrupted
     )
 
-
-    # Training
+    # Training with automatic checkpoint resumption
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -157,12 +152,12 @@ if __name__ == "__main__":
 
     print("\n🚀 Starting training...")
     try:
-        trainer.train()
+        trainer.train(resume_from_checkpoint=True)
     except Exception as e:
         print(f"\n❌ Training failed: {str(e)}")
         exit(1)
 
-    # Save results
+    # Save the final model
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     trainer.save_model(OUTPUT_DIR)
     print(f"\n✅ Model successfully saved to {OUTPUT_DIR}")
